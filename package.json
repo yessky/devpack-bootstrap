@@ -1,0 +1,49 @@
+{
+  "name": "devpack-boot",
+  "displayName": "devpack booter",
+  "description": "Auto install popular lint related npm modules for devpack",
+  "keywords": [
+    "eslint",
+    "devpack",
+    "qakit",
+    "boot"
+  ],
+  "version": "0.0.1",
+  "publisher": "yessky <admin@veryos.com>",
+  "repository": {
+    "url": "https://github.com/yessky/vsc-devpack-boot"
+  },
+  "bugs": {
+    "url": "https://github.com/yessky/vsc-devpack-boot/issues"
+  },
+  "homepage": "https://github.com/yessky/vsc-devpack-boot",
+  "icon": "devpack.png",
+  "engines": {
+    "vscode": "^1.66.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "devpack.BootFix",
+        "title": "Dev Pack: Reboot devpack to fix problems"
+      },
+      {
+        "command": "devpack.QAKitFix",
+        "title": "Dev Pack: Fix QAKit problems"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.66.0",
+    "@types/glob": "^8.1.0",
+    "@types/node": "20.2.5",
+    "eslint": "^8.41.0"
+  }
+}
