@@ -9,7 +9,7 @@
     "boot"
   ],
   "version": "0.0.1",
-  "publisher": "yessky <admin@veryos.com>",
+  "publisher": "yessky",
   "repository": {
     "url": "https://github.com/yessky/vsc-devpack-boot"
   },
