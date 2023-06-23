@@ -4,12 +4,13 @@ const { window, commands } = vscode;
 
 // work in progress installation
 const installs = {};
+let installing = false;
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  context.subscriptions.push(commands.registerCommand('devpack.BootFix', startup));
+  context.subscriptions.push(commands.registerCommand('devpack.BootFix', () => startup(true)));
   context.subscriptions.push(commands.registerCommand('devpack.QAKitFix', fixQAKit));
   startup();
 }
@@ -25,7 +26,13 @@ function deactivate() {
   });
 }
 
-function startup() {
+function startup(fresh) {
+  if (!installing && fresh) {
+    Object.keys(installs).forEach((name) => {
+      installs[name].promise = null;
+    });
+  }
+  installing = true;
   Promise.all([installCli('eslint', 'eslint'), installCli('devpack-qa', '@devpack/qakit')])
     .then(onBootDone)
     .catch(onBootError);
@@ -33,7 +40,7 @@ function startup() {
 
 function installCli(name, pkg) {
   let work = installs[name];
-  if (!work) {
+  if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
       if (hasCli(name)) {
@@ -59,14 +66,6 @@ function hasCli(name) {
   } catch (err) {
     installed = false;
   }
-  if (!installed) {
-    try {
-      execSync(`${name} --help`);
-      installed = true;
-    } catch (err) {
-      installed = false;
-    }
-  }
   return installed;
 }
 
@@ -76,10 +75,12 @@ function fixQAKit() {
 
 function onBootDone() {
   const welcome = 'devpack boot done.';
+  installing = false;
   window.setStatusBarMessage(welcome, 2000);
 }
 
 function onBootError(err) {
+  installing = false;
   window.showErrorMessage('devpack boot failed, as: ' + err);
 }
 
