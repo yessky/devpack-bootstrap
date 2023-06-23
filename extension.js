@@ -26,7 +26,7 @@ function deactivate() {
 }
 
 function startup() {
-  Promise.all([installCli('eslint', 'eslint'), installCli('devpack-qakit', '@devpack/qakit')])
+  Promise.all([installCli('eslint', 'eslint'), installCli('devpack-qa', '@devpack/qakit')])
     .then(onBootDone)
     .catch(onBootError);
 }
