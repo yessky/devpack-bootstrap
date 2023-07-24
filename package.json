@@ -1,22 +1,22 @@
 {
-  "name": "devpack-boot",
-  "displayName": "devpack booter",
-  "description": "Auto install popular lint related npm modules for devpack",
+  "name": "devpack-bootstrap",
+  "displayName": "Dev Pack Installer",
+  "description": "Auto install popular lint related npm modules for development",
   "keywords": [
     "eslint",
     "devpack",
     "qakit",
     "boot"
   ],
-  "version": "0.0.3",
+  "version": "0.0.1",
   "publisher": "yessky",
   "repository": {
-    "url": "https://github.com/yessky/vsc-devpack-boot"
+    "url": "https://github.com/yessky/devpack-bootstrap"
   },
   "bugs": {
-    "url": "https://github.com/yessky/vsc-devpack-boot/issues"
+    "url": "https://github.com/yessky/devpack-bootstrap/issues"
   },
-  "homepage": "https://github.com/yessky/vsc-devpack-boot",
+  "homepage": "https://github.com/yessky/devpack-bootstrap",
   "icon": "devpack.png",
   "engines": {
     "vscode": "^1.66.0"
