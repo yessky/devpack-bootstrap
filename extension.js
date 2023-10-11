@@ -1,5 +1,7 @@
+const path = require('path');
+const fs = require('fs');
 const vscode = require('vscode');
-const { exec, execSync } = require('child_process');
+const { exec, execSync, spawnSync } = require('child_process');
 const { window, commands } = vscode;
 
 // work in progress installation
@@ -43,7 +45,7 @@ function installCli(name, pkg) {
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
-      if (hasCli(name)) {
+      if (isExistsPath(name)) {
         return resolve(name);
       }
       work.task = exec(`npm i -g ${pkg}`, (err) => {
@@ -59,14 +61,41 @@ function installCli(name, pkg) {
   return work.promise;
 }
 
-function hasCli(name) {
+function isExistsPath(name) {
   let installed = true;
   try {
     execSync(`${name} -v`);
   } catch (err) {
-    installed = false;
+    const globalNpm = resolveGlobalNpm();
+    installed = fs.existsSync(path.join(globalNpm, name));
   }
   return installed;
+}
+
+function resolveGlobalNpm() {
+  let npmCommand = 'npm';
+  const options = {
+    encoding: 'utf8',
+    env: process.env
+  };
+  if (isWindows()) {
+    npmCommand = 'npm.cmd';
+    options.shell = true;
+  }
+  let stdout = spawnSync(npmCommand, ['config', 'get', 'prefix'], options).stdout;
+  if (!stdout) return;
+  let prefix = stdout.trim();
+  if (prefix.length > 0) {
+    if (isWindows()) {
+      return path.join(prefix, 'node_modules');
+    } else {
+      return path.join(prefix, 'lib', 'node_modules');
+    }
+  }
+}
+
+function isWindows() {
+  return process.platform === 'win32';
 }
 
 function fixQAKit() {
