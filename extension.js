@@ -46,7 +46,7 @@ function installOrUpdate(name, pkg) {
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
-      const action = isInstalled(name) ? 'install' : 'update';
+      const action = isInstalled(name) ? 'update' : 'install';
       work.task = spawn(
         'npm',
         [action, '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
