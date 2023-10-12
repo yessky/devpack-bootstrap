@@ -32,23 +32,24 @@ function startup(fresh) {
       installs[name].promise = null;
     });
   }
-  installing = true;
-  Promise.all([installCli('eslint', 'eslint'), installCli('devpack-qa', '@devpack/qakit')])
+  onBootStrap();
+  Promise.all([
+    installOrUpdate('eslint', 'eslint'),
+    installOrUpdate('devpack-qa', '@devpack/qakit')
+  ])
     .then(onBootDone)
     .catch(onBootError);
 }
 
-function installCli(name, pkg) {
+function installOrUpdate(name, pkg) {
   let work = installs[name];
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
-      if (isInstalled(name)) {
-        return resolve(name);
-      }
+      const action = isInstalled(name) ? 'install' : 'update';
       work.task = spawn(
         'npm',
-        ['i', '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
+        [action, '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
         { stdio: 'inherit', windowsHide: true }
       );
       work.task.on('close', (code) => {
@@ -79,15 +80,21 @@ function fixQAKit() {
   // todo
 }
 
+function onBootStrap() {
+  const hint = 'devpack bootstrap ...';
+  installing = true;
+  window.setStatusBarMessage(hint, 2000);
+}
+
 function onBootDone() {
-  const welcome = 'devpack boot done.';
+  const hint = 'devpack boot done.';
   installing = false;
-  window.setStatusBarMessage(welcome, 2000);
+  window.setStatusBarMessage(hint, 2000);
 }
 
 function onBootError(err) {
   installing = false;
-  window.showErrorMessage('devpack boot failed, as: ' + err);
+  window.showErrorMessage('devpack boot failed, as:\n' + err);
 }
 
 module.exports = {
