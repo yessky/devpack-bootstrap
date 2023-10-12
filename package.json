@@ -8,7 +8,7 @@
     "qakit",
     "boot"
   ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "yessky",
   "repository": {
     "url": "https://github.com/yessky/devpack-bootstrap"
@@ -41,10 +41,12 @@
     ]
   },
   "devDependencies": {
-    "@types/vscode": "^1.66.0",
     "@types/glob": "^8.1.0",
     "@types/node": "20.2.5",
-    "cross-spawn": "^7.0.3",
+    "@types/vscode": "^1.66.0",
     "eslint": "^8.41.0"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.3"
   }
 }
