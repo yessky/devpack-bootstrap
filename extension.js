@@ -46,10 +46,12 @@ function installOrUpdate(name, pkg) {
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
-      const action = isInstalled(name) ? 'update' : 'install';
+      if (isInstalled(name, pkg)) {
+        return resolve(name);
+      }
       work.task = spawn(
         'npm',
-        [action, '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
+        ['install', '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
         { stdio: 'inherit', windowsHide: true }
       );
       work.task.on('close', (code) => {
@@ -64,16 +66,32 @@ function installOrUpdate(name, pkg) {
   return work.promise;
 }
 
-function isInstalled(name) {
-  let installed = true;
+function isInstalled(name, pkg) {
+  const localVer = getInstalled(name);
+  if (!localVer) return false;
+  const latestVer = getLatest(pkg);
+  return latestVer === localVer;
+}
+
+function getInstalled(name) {
+  let installed = false;
   try {
     const out = spawn.sync(name, ['-v'], { encoding: 'utf8' });
-    installed = !out.status;
+    installed = !out.status && out.stdout.toString().trim();
   } catch (err) {
     installed = false;
     console.error(err);
   }
   return installed;
+}
+
+function getLatest(pkg) {
+  try {
+    const out = spawn.sync('npm', ['view', pkg, 'version'], { encoding: 'utf8' });
+    if (!out.status) return out.stdout.toString().trim();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function fixQAKit() {
