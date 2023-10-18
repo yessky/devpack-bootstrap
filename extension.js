@@ -5,6 +5,7 @@ const { window, commands } = vscode;
 // work in progress installation
 const installs = {};
 let installing = false;
+let monitor = {};
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -32,13 +33,18 @@ function startup(fresh) {
       installs[name].promise = null;
     });
   }
+  const eslintp = installOrUpdate('eslint', 'eslint');
+  const qakitp = installOrUpdate('devpack-qa', '@devpack/qakit');
+  const total = 2;
+  let remain = 2;
+  const checkProgess = () => {
+    --remain;
+    reportProgress(((total - remain) / total) * 100);
+  };
   onBootStrap();
-  Promise.all([
-    installOrUpdate('eslint', 'eslint'),
-    installOrUpdate('devpack-qa', '@devpack/qakit')
-  ])
-    .then(onBootDone)
-    .catch(onBootError);
+  eslintp.then(checkProgess).catch(onBootError);
+  qakitp.then(checkProgess).catch(onBootError);
+  return Promise.all([eslintp, qakitp]).then(onBootDone).catch(onBootError);
 }
 
 function installOrUpdate(name, pkg) {
@@ -46,6 +52,9 @@ function installOrUpdate(name, pkg) {
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
+      if (name === 'eslint') {
+        return reject('canceled test');
+      }
       if (isInstalled(name, pkg)) {
         return resolve(name);
       }
@@ -76,7 +85,7 @@ function isInstalled(name, pkg) {
 function getInstalled(name) {
   let installed = false;
   try {
-    const out = spawn.sync(name, ['-v'], { encoding: 'utf8' });
+    const out = spawn.sync(name, ['-v'], { encoding: 'utf8', windowsHide: true });
     installed = !out.status && out.stdout.toString().trim();
   } catch (err) {
     installed = false;
@@ -87,7 +96,10 @@ function getInstalled(name) {
 
 function getLatest(pkg) {
   try {
-    const out = spawn.sync('npm', ['view', pkg, 'version'], { encoding: 'utf8' });
+    const out = spawn.sync('npm', ['view', pkg, 'version'], {
+      encoding: 'utf8',
+      windowsHide: true
+    });
     if (!out.status) return out.stdout.toString().trim();
   } catch (err) {
     console.error(err);
@@ -99,20 +111,50 @@ function fixQAKit() {
 }
 
 function onBootStrap() {
-  const hint = 'devpack bootstrap ...';
+  if (installing) return;
   installing = true;
-  window.setStatusBarMessage(hint, 2000);
+  showProgress();
+  reportProgress(0);
 }
 
 function onBootDone() {
-  const hint = 'devpack boot done.';
+  hideProgress();
   installing = false;
-  window.setStatusBarMessage(hint, 2000);
+  window.setStatusBarMessage('devpack boot done.', 1500);
 }
 
 function onBootError(err) {
+  hideProgress();
   installing = false;
-  window.showErrorMessage('devpack boot failed, as:\n' + err);
+  window.showErrorMessage('Bootstrap failed, as:\n' + err);
+}
+
+function showProgress() {
+  window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: 'DevPack Bootstrap',
+      cancellable: true
+    },
+    (progress) => {
+      return new Promise((resolve) => {
+        monitor.progress = progress;
+        monitor.resolve = resolve;
+      });
+    }
+  );
+}
+
+function reportProgress(val) {
+  if (monitor.progress) {
+    monitor.progress.report({ increment: val, message: 'Installing required modules' });
+  }
+}
+
+function hideProgress() {
+  if (monitor.resolve) {
+    monitor.resolve();
+  }
 }
 
 module.exports = {
