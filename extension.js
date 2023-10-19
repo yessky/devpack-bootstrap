@@ -148,7 +148,7 @@ function showProgress() {
   window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
-      title: l10n.t('Devpack Bootstrap'),
+      title: 'Devpack Bootstrap',
       cancellable: false
     },
     (progress) => {

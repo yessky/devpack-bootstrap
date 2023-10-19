@@ -3,6 +3,7 @@
 test/**
 .gitignore
 .yarnrc
+.git
 vsc-extension-quickstart.md
 **/jsconfig.json
 **/*.map
