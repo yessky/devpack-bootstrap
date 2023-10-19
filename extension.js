@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const spawn = require('cross-spawn');
-const { window, commands } = vscode;
+const { window, commands, extensions, l10n } = vscode;
 
 // work in progress installation
 const installs = {};
@@ -13,6 +13,7 @@ let monitor = {};
 function activate(context) {
   context.subscriptions.push(commands.registerCommand('devpack.BootFix', () => startup(true)));
   context.subscriptions.push(commands.registerCommand('devpack.QAKitFix', fixQAKit));
+  checkExtensions();
   startup();
 }
 
@@ -47,14 +48,28 @@ function startup(fresh) {
   return Promise.all([eslintp, qakitp]).then(onBootDone).catch(onBootError);
 }
 
+function checkExtensions() {
+  const plugins = {
+    ESLint: 'dbaeumer.vscode-eslint',
+    Prettier: 'esbenp.prettier-vscode',
+    Vetur: 'octref.vetur'
+  };
+  const missing = Object.keys(plugins).filter((name) => !extensions.getExtension(plugins[name]));
+  if (missing.length) {
+    window.showWarningMessage(
+      l10n.t(
+        'Please install required extensions: {0}',
+        missing.map((name) => `${name}(${plugins[name]})`).join(', ')
+      )
+    );
+  }
+}
+
 function installOrUpdate(name, pkg) {
   let work = installs[name];
   if (!work || !work.promise) {
     work = installs[name] = {};
     work.promise = new Promise((resolve, reject) => {
-      if (name === 'eslint') {
-        return reject('canceled test');
-      }
       if (isInstalled(name, pkg)) {
         return resolve(name);
       }
@@ -118,23 +133,23 @@ function onBootStrap() {
 }
 
 function onBootDone() {
-  hideProgress();
   installing = false;
-  window.setStatusBarMessage('devpack boot done.', 1500);
+  reportProgress(100, l10n.t('Ready to use.'));
+  setTimeout(hideProgress, 2000);
 }
 
 function onBootError(err) {
   hideProgress();
   installing = false;
-  window.showErrorMessage('Bootstrap failed, as:\n' + err);
+  window.showErrorMessage(l10n.t('Error occurs, detail:\n{0}', err));
 }
 
 function showProgress() {
   window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
-      title: 'DevPack Bootstrap',
-      cancellable: true
+      title: l10n.t('Devpack Bootstrap'),
+      cancellable: false
     },
     (progress) => {
       return new Promise((resolve) => {
@@ -145,9 +160,9 @@ function showProgress() {
   );
 }
 
-function reportProgress(val) {
+function reportProgress(val, msg) {
   if (monitor.progress) {
-    monitor.progress.report({ increment: val, message: 'Installing required modules' });
+    monitor.progress.report({ increment: val, message: msg || l10n.t('Preparing...') });
   }
 }
 

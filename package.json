@@ -1,7 +1,7 @@
 {
   "name": "devpack-bootstrap",
-  "displayName": "Dev Pack Installer",
-  "description": "Auto install popular lint related npm modules for development",
+  "displayName": "Devpack Bootstrap",
+  "description": "bootstrap to install required modules for devpack",
   "keywords": [
     "eslint",
     "devpack",
@@ -29,22 +29,23 @@
     "onStartupFinished"
   ],
   "main": "./extension.js",
+  "l10n": "./l10n",
   "contributes": {
     "commands": [
       {
         "command": "devpack.BootFix",
-        "title": "Dev Pack: Reboot devpack to fix problems"
+        "title": "%extension.BootFix.title%"
       },
       {
         "command": "devpack.QAKitFix",
-        "title": "Dev Pack: Fix QAKit problems"
+        "title": "%extension.QAKitFix.title%"
       }
     ]
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "20.2.5",
-    "@types/vscode": "^1.66.0",
+    "@types/vscode": "^1.73.0",
     "eslint": "^8.41.0"
   },
   "dependencies": {
