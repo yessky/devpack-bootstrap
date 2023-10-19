@@ -8,7 +8,7 @@
     "qakit",
     "boot"
   ],
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "yessky",
   "repository": {
     "url": "https://github.com/yessky/devpack-bootstrap"
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/yessky/devpack-bootstrap",
   "icon": "devpack.png",
   "engines": {
-    "vscode": "^1.66.0"
+    "vscode": "^1.73.0"
   },
   "categories": [
     "Other"
