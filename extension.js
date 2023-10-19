@@ -49,19 +49,11 @@ function startup(fresh) {
 }
 
 function checkExtensions() {
-  const plugins = {
-    ESLint: 'dbaeumer.vscode-eslint',
-    Prettier: 'esbenp.prettier-vscode',
-    Vetur: 'octref.vetur'
-  };
-  const missing = Object.keys(plugins).filter((name) => !extensions.getExtension(plugins[name]));
+  const plugins = ['dbaeumer.vscode-eslint', 'esbenp.prettier-vscode', 'octref.vetur'];
+  const extpack = 'Vue2.0 Extension Pack(yessky.vue-extpack)';
+  const missing = plugins.filter((id) => !extensions.getExtension(id));
   if (missing.length) {
-    window.showWarningMessage(
-      l10n.t(
-        'Please install required extensions: {0}',
-        missing.map((name) => `${name}(${plugins[name]})`).join(', ')
-      )
-    );
+    window.showWarningMessage(l10n.t('Please install required extension: {0}', extpack));
   }
 }
 
@@ -76,11 +68,11 @@ function installOrUpdate(name, pkg) {
       work.task = spawn(
         'npm',
         ['install', '-g', '--force', '--registry', 'https://registry.npmmirror.com', pkg],
-        { stdio: 'inherit', windowsHide: true }
+        { windowsHide: true }
       );
       work.task.on('close', (code) => {
         if (code) {
-          reject();
+          reject(work.stderr.toString());
         } else {
           resolve(name);
         }
@@ -134,14 +126,14 @@ function onBootStrap() {
 
 function onBootDone() {
   installing = false;
-  reportProgress(100, l10n.t('Ready to use.'));
+  reportProgress(100, l10n.t('Ready to use'));
   setTimeout(hideProgress, 2000);
 }
 
 function onBootError(err) {
   hideProgress();
   installing = false;
-  window.showErrorMessage(l10n.t('Error occurs, detail:\n{0}', err));
+  window.showErrorMessage(l10n.t('Error occurs, detail:{0}', err || l10n.t('Unknow error')));
 }
 
 function showProgress() {

@@ -1,7 +1,8 @@
 {
   "Devpack Bootstrap": "Devpack 引导",
   "Preparing...": "准备中...",
-  "Ready to use.": "已准备就绪.",
-  "Error occurs, detail:\n{0}": "遇到错误, 详情:\n{0}",
-  "Please install required extensions: {0}": "请安装必要扩展: {0}"
+  "Ready to use": "准备就绪",
+  "Error occurs, detail:{0}": "遇到错误, 详情:{0}",
+  "Please install required extension: {0}": "请安装必要扩展: {0}",
+  "Unknow error": "未知错误"
 }
