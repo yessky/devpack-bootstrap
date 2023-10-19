@@ -1,19 +1,17 @@
 const vscode = require('vscode');
 const spawn = require('cross-spawn');
-const { window, commands, extensions, l10n } = vscode;
+const path = require('path');
+const git = require('./lib/git');
+const { window, commands, l10n } = vscode;
 
 // work in progress installation
 const installs = {};
 let installing = false;
 let monitor = {};
 
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
   context.subscriptions.push(commands.registerCommand('devpack.BootFix', () => startup(true)));
   context.subscriptions.push(commands.registerCommand('devpack.QAKitFix', fixQAKit));
-  checkExtensions();
   startup();
 }
 
@@ -46,15 +44,6 @@ function startup(fresh) {
   eslintp.then(checkProgess).catch(onBootError);
   qakitp.then(checkProgess).catch(onBootError);
   return Promise.all([eslintp, qakitp]).then(onBootDone).catch(onBootError);
-}
-
-function checkExtensions() {
-  const plugins = ['dbaeumer.vscode-eslint', 'esbenp.prettier-vscode', 'octref.vetur'];
-  const extpack = 'Vue2.0 Extension Pack(yessky.vue-extpack)';
-  const missing = plugins.filter((id) => !extensions.getExtension(id));
-  if (missing.length) {
-    window.showWarningMessage(l10n.t('Please install required extension: {0}', extpack));
-  }
 }
 
 function installOrUpdate(name, pkg) {
@@ -92,7 +81,10 @@ function isInstalled(name, pkg) {
 function getInstalled(name) {
   let installed = false;
   try {
-    const out = spawn.sync(name, ['-v'], { encoding: 'utf8', windowsHide: true });
+    const out = spawn.sync('npx', ['--no-install', name, '-v'], {
+      encoding: 'utf8',
+      windowsHide: true
+    });
     installed = !out.status && out.stdout.toString().trim();
   } catch (err) {
     installed = false;
