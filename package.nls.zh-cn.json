@@ -1,4 +1,3 @@
 {
-  "extension.BootFix.title": "Devpack: 重载修复插件问题",
-  "extension.QAKitFix.title": "Devpack: 检查并修复QAKit问题"
+  "extension.QAKit.reload.title": "Devpack: 重载QAKit"
 }
