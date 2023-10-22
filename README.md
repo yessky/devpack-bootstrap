@@ -1,5 +1,3 @@
-# devpack-boot
+# devpack-bootstrap
 
-This extension used to automatically install popular linter related npm modules.
-
-The main purpose is to bundle usefull vs code extensions into extension pack so that each developer can startup the same developent env with 'one click'.
+This extension used to manage `@devpack/qakit` package and keep it up to date in your environment.
