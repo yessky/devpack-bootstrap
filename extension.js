@@ -138,7 +138,7 @@ async function checkAndInstall(force) {
     installModule(cacheDir);
   } else {
     inProgress = false;
-    window.setStatusBarMessage('QAKit Ready');
+    window.setStatusBarMessage('QAKit Ready', 5000);
   }
 }
 
@@ -150,7 +150,7 @@ function installModule(cacheDir) {
   );
   proc.on('close', (code) => {
     inProgress = false;
-    if (!code) window.setStatusBarMessage('QAKit Ready');
+    if (!code) window.setStatusBarMessage('QAKit Ready', 5000);
   });
 }
 
