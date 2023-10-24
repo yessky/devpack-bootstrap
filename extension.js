@@ -174,8 +174,7 @@ function getNpmDir() {
       windowsHide: true
     });
     if (!out.status) {
-      npmDir = out.stdout.toString().trim();
-      return npmDir;
+      return out.stdout.toString().trim();
     }
   } catch (err) {
     console.error(err);
