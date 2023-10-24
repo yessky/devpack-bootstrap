@@ -8,7 +8,7 @@
     "qakit",
     "boot"
   ],
-  "version": "0.0.11",
+  "version": "0.0.12",
   "publisher": "yessky",
   "repository": {
     "url": "https://github.com/yessky/devpack-bootstrap"
